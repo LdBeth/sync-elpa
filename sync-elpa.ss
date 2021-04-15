@@ -4,7 +4,8 @@
 
 (define elpa-alist
   '(["gnu/" . "http://elpa.gnu.org/packages/"]
-    ["melpa/" .  "https://melpa.org/packages/"]))
+    ["melpa/" . "https://melpa.org/packages/"]
+    ["melpa-stable/". "https://stable.melpa.org/packages/"]))
 
 (define elpa-prefix "/root/elpa-mirror-2021-main/")
 
