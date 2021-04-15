@@ -1,0 +1,4 @@
+(generate-wpo-files #t)
+(compile-library "elpa")
+(compile-program "sync-elpa")
+(compile-whole-program "sync-elpa.wpo" "out")

@@ -1,5 +1,6 @@
-#!/usr/bin/env scheme --script
-(import (elpa))
+#!r6rs
+(import (chezscheme)
+        (elpa))
 
 (define elpa-alist
   '(["gnu/" . "http://elpa.gnu.org/packages/"]
@@ -20,4 +21,5 @@
             (for-each
              (lambda (x)
                (cd (string-append elpa-prefix (car x)))
-               (sync-elpa #f o (cdr x)))))))))
+               (sync-elpa #f o (cdr x)))
+             elpa-alist))))))
