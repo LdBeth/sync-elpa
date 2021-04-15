@@ -16,10 +16,11 @@
   (if (null? args)
       (help)
       (let ([log (car args)])
-        (call-with-output-file log
+        [call-with-output-file log
           (lambda (o)
             (for-each
              (lambda (x)
                (cd (string-append elpa-prefix (car x)))
                (sync-elpa #f o (cdr x)))
-             elpa-alist))))))
+             elpa-alist))
+          'append])))
