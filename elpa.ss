@@ -42,21 +42,15 @@
               [ver (cadr x)]
               [kind (list-ref x 4)]
               [old (hashtable-ref table name #f)])
-         (hashtable-delete! table name)
-         (cond
-          [(not old) (cons (fmt-pkg name ver kind) xs)]
-          [(not (equal? old (list ver kind)))
-           (cons [cons (apply fmt-pkg name old)
-                       (fmt-pkg name ver kind)] xs)]
-          [else
-             xs])))
+         (if (not (and old (equal? old (list ver kind))))
+             (cons (fmt-pkg name ver kind) xs)
+             [begin
+               (hashtable-delete! table name)
+               xs])))
      '() pkgs)))
 
 (define (update-diffs pending)
-  (for-each (lambda (o)
-              (if (atom? o)
-                  (download o)
-                  (update o)))
+  (for-each download
             pending))
 
 #|
@@ -118,13 +112,6 @@
       (format #t "remove file: ~a~%" f)
       (delete-file f)))
 
-(define (update o)
-  (let ([old (car o)]
-        [new (cdr o)])
-    (if dry-run
-        (format #t "update file: ~a -> ~a ~%" old new)
-        (send (string-append "axel " remote new " && rm " old)))))
-
 (define (sync-elpa dry url)
   [fluid-let ([remote url]
               [dry-run dry])
@@ -138,12 +125,12 @@
            (lambda ()
              (format #t "update diffs.~%")
              (update-diffs diff)
-             (format #t "clean up files.~%")
-             (cleanup-files table)
              (format #t "update index.~%")
              (delete "archive-contents.tmp")
              (unless dry-run
                (send (string-append "axel -o archive-contents.tmp " remote
                                     "archive-contents && mv archive-contents.tmp archive-contents")))
+             (format #t "clean up files.~%")
+             (cleanup-files table)
              )]))])
 )
