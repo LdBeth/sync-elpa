@@ -92,13 +92,14 @@
           ;; send eof
           (write-char (integer->char 4) parallel)
           (format #t "end parallel~%")
-          (pipe in log-file)
+          (pipe in log-output)
           (format #t "end pipe~%"))])))
 
 ;; variables
 (define remote)
 (define parallel)
-(define log-file)
+(define log-output
+  (standard-output-port 'none (make-transcoder (utf-8-codec))))
 (define dry-run #f)
 
 ;;(define send system)
@@ -124,9 +125,8 @@
         (format #t "update file: ~a -> ~a ~%" old new)
         (send (string-append "axel " remote new " && rm " old)))))
 
-(define (sync-elpa dry log url)
+(define (sync-elpa dry url)
   [fluid-let ([remote url]
-              [log-file log]
               [dry-run dry])
     (let* ([local-data (read-archive)]
            [remote-data (read-remote-pkgs)]

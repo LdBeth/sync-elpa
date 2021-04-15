@@ -8,19 +8,10 @@
 
 (define elpa-prefix "/root/elpa-mirror-2021-main/")
 
-(define (help)
-  (display-string "usage: sync-elpa logfile")
-  (newline))
-
-(let ([args (cdr (command-line))])
-  (if (null? args)
-      (help)
-      (let ([log (car args)])
-        [call-with-output-file log
-          (lambda (o)
-            (for-each
-             (lambda (x)
-               (cd (string-append elpa-prefix (car x)))
-               (sync-elpa #f o (cdr x)))
-             elpa-alist))
-          'append])))
+(for-each
+ (lambda (x)
+   (let ([path (string-append elpa-prefix (car x))])
+     (format #t "start sync ~a~%" path)
+     (cd path)
+     (sync-elpa #f (cdr x))))
+ elpa-alist)

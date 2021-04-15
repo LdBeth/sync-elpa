@@ -1,0 +1,9 @@
+[Unit]
+Description=Runs sync-elpa every 6 hours
+
+[Timer]
+OnUnitActiveSec=6h
+Unit=sync-elpa.service
+
+[Install]
+WantedBy=multi-user.target
