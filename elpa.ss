@@ -1,6 +1,7 @@
 
 (library (elpa)
-  (export sync-elpa)
+  (export sync-elpa
+          sanity-check)
   (import (chezscheme))
 (define (read-archive)
   (call-with-input-file "archive-contents"
@@ -71,7 +72,7 @@
   (let ([buf (make-string 1000)])
     (let aux ([input (block-read in buf)])
       (when (number? input)
-        (display "*")
+        ;; (display "*")
         (block-write out buf input)
         (aux (block-read in buf))))))
 
@@ -112,6 +113,12 @@
       (format #t "remove file: ~a~%" f)
       (delete-file f)))
 
+(define (update-index)
+  (unless dry-run
+    (system (string-append "axel -o archive-contents.tmp " remote
+                           "archive-contents"))
+    (rename-file "archive-contents.tmp" "archive-contents")))
+
 (define (sync-elpa dry url)
   [fluid-let ([remote url]
               [dry-run dry])
@@ -121,16 +128,25 @@
            [diff (get-difference table remote-data)])
       (if (null? diff)
           (format #t "nothing to do.~%")
-          [with-parallel
-           (lambda ()
-             (format #t "update diffs.~%")
-             (update-diffs diff)
-             (format #t "update index.~%")
-             (delete "archive-contents.tmp")
-             (unless dry-run
-               (send (string-append "axel -o archive-contents.tmp " remote
-                                    "archive-contents && mv archive-contents.tmp archive-contents")))
-             (format #t "clean up files.~%")
-             (cleanup-files table)
-             )]))])
+          [begin
+            (with-parallel
+             (lambda ()
+               (format #t "update diffs.~%")
+               (update-diffs diff)))
+            (format #t "update index.~%")
+            (delete "archive-contents.tmp")
+            (update-index)
+            (format #t "clean up files.~%")
+            (cleanup-files table)]))])
+
+(define (sanity-check)
+  (let* ([data (read-archive)]
+         [files (directory-list ".")])
+    (vector-for-each
+     (lambda (x)
+       (set! files
+             (remove! (apply fmt-pkg x (hashtable-ref data x #f)) files)))
+     (hashtable-keys data))
+    files))
+
 )
