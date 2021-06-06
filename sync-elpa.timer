@@ -2,7 +2,7 @@
 Description=Runs sync-elpa every 6 hours
 
 [Timer]
-OnUnitActiveSec=6h
+OnUnitActiveSec=12h
 Unit=sync-elpa.service
 
 [Install]
