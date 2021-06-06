@@ -3,7 +3,7 @@ Description=Sync ELPA archive
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/scheme-script /root/sync-elpa/out
+ExecStart=/usr/bin/scheme-script /root/sync-elpa/sync
 Restart=on-failure
 
 [Install]
