@@ -1,6 +1,6 @@
-all: out
+all: out sync
 
-out: elpa.ss sync-elpa.ss
+out sync: elpa.ss sync-elpa.ss rsync.ss
 	scheme build.ss
 
 clean:

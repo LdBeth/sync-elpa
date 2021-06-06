@@ -2,4 +2,6 @@
 (compile-library "elpa")
 (compile-program "sync-elpa")
 (compile-whole-program "sync-elpa.wpo" "out")
+(compile-program "rsync")
+(compile-whole-program "rsync.wpo" "sync")
 (exit)
